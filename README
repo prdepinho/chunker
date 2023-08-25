@@ -1,0 +1,62 @@
+
+
+# Introduction
+
+This application was developped by Paulo de Pinho, 20/08/2023. It took
+around 10 hours to make. It uses Python 3.11.5 and Docker 24.0.5.
+
+The purpose of this application is to receive a binary file and divide it
+into specificaly sized chunks. It runs on a server over a container.
+There is a client that sends files to it, and the server cuts it down to
+chunks.
+
+The most challenging part of this assigment was to make the client communicate
+with the server in the container. Carefully reading the documentation
+and following the instructions made me figure how to make it work. I had
+the server set for 127.0.0.1 instead of 0.0.0.0. Then I managed to make a typo
+of 172.0.0.1 when setting up the container, and it took a while to identify it.
+When we are in a hurry, that's when we waste time the most.
+
+
+# Server
+
+To start the server, run run.sh.
+
+Alternatively, move to server/ folder and run?
+  docker build -t server_app .
+  docker run -p 127.0.0.1:1900:1701 server_app
+
+Alternatively, simply run it outside docker:
+  python server.py
+
+Configuration is set in two ways. Either use the configuration file server.ini
+or use environment variables. These have precedence over the ini file. If
+any variable is not set in either the ini file or as an envirionment variable,
+then the server will not run.
+
+In the ini file all keys are under [server] tag. Following are the variables
+in environment variable for and in ini file key form:
+Env. Var.:        Key:        Description:
+SERVER_HOST       host        the address to serve. Use 0.0.0.0.
+SERVER_PORT       port        the port to serve under.
+SERVER_TIMEOUT    timeout     timeout for connections, in seconds.
+SERVER_FILE_SIZE  file_size   the maximum size for the files created.
+SERVER_FILE_NAME  file_name   the prefix for the name of the files created.
+
+Files produced are written with its file_name, the identity number of the 
+client socket that sent the file, a count and the datetime of the file
+creation.
+
+
+# Client
+
+To use the client, go to the client/ folder and run
+  python client.py <file>
+in which <file> is the path for any binary file you want to transmit. Try
+sending a picture.
+
+Client has a similar way of configuring it to the Server, but its variables
+are fewer. Its ini file are under the tag [client]:
+Env. Var.:        Key:        Description:
+CLIENT_HOST       host        the address of the server.
+CLIENT_PORT       port        the port.
